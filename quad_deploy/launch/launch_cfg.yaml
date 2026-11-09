@@ -1,0 +1,24 @@
+# Node Orchestration Configuration (Project: Quad Example)
+sessions:
+  - env:
+      session_name: "quad_system"
+      workspace_root: "/media/laoye/Localdisk/Ubuntu2004Linux"
+      conda_env: "sea_nav"
+      ros_setup: "/opt/ros/foxy/setup.bash"
+
+    nodes:
+      - name: "RL_CONTROL_SIM"
+        project: "Avoid_Obs_Nav/quad_deploy"
+        cpus: "1"
+        command: "python quad_deploy/scripts/sigloma/sigloma_run_sdk.py --data ../Data/onboard_data/onnx_models/sigloma"
+
+      - name: "RL_CONTROL_REAL"
+        project: "Avoid_Obs_Nav/quad_deploy"
+        cpus: "1"
+        command: "python quad_deploy/scripts/sigloma/sigloma_run_sdk.py --nosimrun  --nodryrun --auto --data ../Data/onboard_data/onnx_models/sigloma"
+        autostart: false
+
+      - name: "MUJOCO_SIM"
+        project: "unitree_mujoco/simulate_python"
+        cpus: "2"
+        command: "python unitree_mujoco.py"

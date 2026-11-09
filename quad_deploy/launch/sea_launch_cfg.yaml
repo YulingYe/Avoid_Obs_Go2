@@ -1,0 +1,30 @@
+# SEA-Nav simulation using the local unitree_mujoco backend.
+# The adapter publishes /rays and ground-truth /pose, without a gamepad.
+# Set --scene on MUJOCO_SIM to override the terrain scene; match the
+# controller goal to the scene with --goal_x / --goal_y.
+# Run: python launch/quad_launch.py launch/sea_launch_cfg.yaml
+# Attach: tmux attach -t sea_system
+
+sessions:
+  - env:
+      session_name: "sea_system"
+      workspace_root: "/media/laoye/Localdisk/Ubuntu2004Linux"
+      conda_env: "sea_nav"
+      # run_sea_node.sh loads Foxy after Conda activation and removes ROS 1 paths.
+
+    nodes:
+      - name: "SEA_CONTROL_SIM"
+        project: "Avoid_Obs_Nav/quad_deploy"
+        cpus: "1"
+        command: "bash launch/run_sea_node.sh python -m quad_deploy.scripts.sea.sea_run_sdk --data ../Data/onboard_data/onnx_models/sea_nav"
+
+      - name: "SEA_CONTROL_REAL"
+        project: "Avoid_Obs_Nav/quad_deploy"
+        cpus: "1"
+        command: "bash launch/run_sea_node.sh python -m quad_deploy.scripts.sea.sea_run_sdk --nosimrun --nodryrun --data ../Data/onboard_data/onnx_models/sea_nav"
+        autostart: false
+
+      - name: "MUJOCO_SIM"
+        project: "Avoid_Obs_Nav/quad_deploy"
+        cpus: "2"
+        command: "bash launch/run_sea_node.sh python -m quad_deploy.scripts.sea.mujoco_sim"
